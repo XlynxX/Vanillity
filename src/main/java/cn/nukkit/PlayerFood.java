@@ -138,7 +138,7 @@ public class PlayerFood {
         if (!this.getPlayer().isFoodEnabled()) return;
         if (this.getPlayer().isAlive()) {
             int diff = Server.getInstance().getDifficulty();
-            if (this.getLevel() > 17) {
+            if (this.getLevel() >= 18) {
                 this.foodTickTimer += tickDiff;
                 if (this.foodTickTimer >= 80) {
                     if (this.getPlayer().getHealth() < this.getPlayer().getMaxHealth()) {

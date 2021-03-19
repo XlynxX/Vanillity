@@ -1,0 +1,17 @@
+Index: src/main/java/cn/nukkit/PlayerFood.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/cn/nukkit/PlayerFood.java b/src/main/java/cn/nukkit/PlayerFood.java
+--- a/src/main/java/cn/nukkit/PlayerFood.java	(revision 558e3934e435615474edb6fa02cd1c0a358be659)
++++ b/src/main/java/cn/nukkit/PlayerFood.java	(date 1616155049359)
+@@ -138,7 +138,7 @@
+         if (!this.getPlayer().isFoodEnabled()) return;
+         if (this.getPlayer().isAlive()) {
+             int diff = Server.getInstance().getDifficulty();
+-            if (this.getLevel() > 17) {
++            if (this.getLevel() >= 18) {
+                 this.foodTickTimer += tickDiff;
+                 if (this.foodTickTimer >= 80) {
+                     if (this.getPlayer().getHealth() < this.getPlayer().getMaxHealth()) {

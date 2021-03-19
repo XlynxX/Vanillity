@@ -203,6 +203,7 @@ public class Server {
     private QueryRegenerateEvent queryRegenerateEvent;
 
     private Config properties;
+    private Config vanillity_config;
     private Config config;
 
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
@@ -236,6 +237,8 @@ public class Server {
     private Level defaultLevel = null;
 
     private boolean allowNether;
+
+    private boolean allowTheEnd;
 
     private final Thread currentThread;
 
@@ -318,6 +321,7 @@ public class Server {
 
             try {
                 Utils.writeFile(this.dataPath + "nukkit.yml", advacedConf);
+                Utils.writeFile(this.dataPath + "vanillity.yml", this.getClass().getClassLoader().getResourceAsStream("vanillity.yml"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -328,6 +332,9 @@ public class Server {
 
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.config = new Config(this.dataPath + "nukkit.yml", Config.YAML);
+
+        log.info("Loading {} ...", TextFormat.GREEN + "vanillity.yml" + TextFormat.WHITE);
+        this.vanillity_config = new Config(this.dataPath + "vanillity.yml", Config.YAML);
 
         Nukkit.DEBUG = NukkitMath.clamp(this.getConfig("debug.level", 1), 1, 3);
 
@@ -346,24 +353,24 @@ public class Server {
         log.info("Loading {} ...", TextFormat.GREEN + "server.properties" + TextFormat.WHITE);
         this.properties = new Config(this.dataPath + "server.properties", Config.PROPERTIES, new ConfigSection() {
             {
-                put("motd", "A Nukkit Powered Server");
-                put("sub-motd", "https://nukkitx.com");
+                put("motd", "A Vanillity Server");
+                put("sub-motd", "https://github.com/XlynxX/Vanillity");
                 put("server-port", 19132);
                 put("server-ip", "0.0.0.0");
-                put("view-distance", 10);
+                put("view-distance", 6);
                 put("white-list", false);
-                put("achievements", true);
-                put("announce-player-achievements", true);
-                put("spawn-protection", 16);
-                put("max-players", 20);
-                put("allow-flight", false);
+                put("achievements", false);
+                put("announce-player-achievements", false);
+                put("spawn-protection", 0);
+                put("max-players", 10);
+                put("allow-flight", true);
                 put("spawn-animals", true);
                 put("spawn-mobs", true);
-                put("gamemode", 0);
+                put("gamemode", 1);
                 put("force-gamemode", false);
                 put("hardcore", false);
                 put("pvp", true);
-                put("difficulty", 1);
+                put("difficulty", 3);
                 put("generator-settings", "");
                 put("level-name", "world");
                 put("level-seed", "");
@@ -380,6 +387,9 @@ public class Server {
 
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
+
+        // Allow End? (determines if we create a end world if one doesn't exist on startup)
+        this.allowTheEnd = this.vanillity_config.getBoolean("allow-end", true);
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
@@ -1271,7 +1281,7 @@ public class Server {
     }
 
     public String getName() {
-        return "Nukkit";
+        return "Vanillity";
     }
 
     public boolean isRunning() {
