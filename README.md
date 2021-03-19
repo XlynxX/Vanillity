@@ -7,7 +7,7 @@ git submodule update --init
 chmod +x mvnw
 mvnw clean package
 ```
-Output will be in /target folder, named Vanillity-1.0.jar
+Output will be in /target folder, named vanillity-1.0.jar
 
 ## Why 1.16.100?
 Bedrock is so bad in 1.16.200+, literally unplayable, maybe will update in future
