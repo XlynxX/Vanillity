@@ -1,0 +1,4 @@
+# Vanillity server config #
+
+# Is TheEnd world enabled // true or false
+allow-end: true

@@ -1,0 +1,15 @@
+Index: src/main/resources/vanillity.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/vanillity.yml b/src/main/resources/vanillity.yml
+new file mode 100644
+--- /dev/null	(date 1616154227314)
++++ b/src/main/resources/vanillity.yml	(date 1616154227314)
+@@ -0,0 +1,4 @@
++# Vanillity server config #
++
++# Is TheEnd world enabled // true or false
++allow-end: true
+\ No newline at end of file
