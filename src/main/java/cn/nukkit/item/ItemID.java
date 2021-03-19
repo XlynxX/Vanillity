@@ -229,7 +229,6 @@ public interface ItemID {
     int SCUTE = 468;
     int TURTLE_SHELL = 469;
     int PHANTOM_MEMBRANE = 470;
-    int CROSSBOW = 471;
 
     int SWEET_BERRIES = 477;
 

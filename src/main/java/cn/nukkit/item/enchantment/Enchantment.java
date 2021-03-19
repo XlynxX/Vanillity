@@ -7,9 +7,6 @@ import cn.nukkit.item.enchantment.bow.EnchantmentBowFlame;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowInfinity;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowKnockback;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowPower;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbowMultishot;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbowPiercing;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbowQuickCharge;
 import cn.nukkit.item.enchantment.damage.EnchantmentDamageAll;
 import cn.nukkit.item.enchantment.damage.EnchantmentDamageArthropods;
 import cn.nukkit.item.enchantment.damage.EnchantmentDamageSmite;
@@ -70,10 +67,6 @@ public abstract class Enchantment implements Cloneable {
     public static final int ID_TRIDENT_RIPTIDE = 30;
     public static final int ID_TRIDENT_LOYALTY = 31;
     public static final int ID_TRIDENT_CHANNELING = 32;
-    public static final int ID_CROSSBOW_MULTISHOT = 33;
-    public static final int ID_CROSSBOW_PIERCING = 34;
-    public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
-    public static final int ID_SOUL_SPEED = 36;
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -111,10 +104,6 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_TRIDENT_RIPTIDE]  = new EnchantmentTridentRiptide();
         enchantments[ID_TRIDENT_LOYALTY]  = new EnchantmentTridentLoyalty();
         enchantments[ID_TRIDENT_CHANNELING]  = new EnchantmentTridentChanneling();
-        enchantments[ID_CROSSBOW_MULTISHOT]  = new EnchantmentCrossbowMultishot();
-        enchantments[ID_CROSSBOW_PIERCING]  = new EnchantmentCrossbowPiercing();
-        enchantments[ID_CROSSBOW_QUICK_CHARGE]  = new EnchantmentCrossbowQuickCharge();
-        enchantments[ID_SOUL_SPEED]  = new EnchantmentSoulSpeed();
     }
 
     public static Enchantment get(int id) {
@@ -146,16 +135,16 @@ public abstract class Enchantment implements Cloneable {
     }
 
     public final int id;
-    private final Rarity rarity;
+    private final int weight;
     public EnchantmentType type;
 
     protected int level = 1;
 
     protected final String name;
 
-    protected Enchantment(int id, String name, Rarity rarity, EnchantmentType type) {
+    protected Enchantment(int id, String name, int weight, EnchantmentType type) {
         this.id = id;
-        this.rarity = rarity;
+        this.weight = weight;
         this.type = type;
 
         this.name = name;
@@ -184,16 +173,8 @@ public abstract class Enchantment implements Cloneable {
         return id;
     }
 
-    public Rarity getRarity() {
-        return this.rarity;
-    }
-
-    /**
-     * @deprecated use {@link Rarity#getWeight()} instead
-     */
-    @Deprecated
     public int getWeight() {
-        return this.rarity.getWeight();
+        return weight;
     }
 
     public int getMinLevel() {
@@ -232,11 +213,7 @@ public abstract class Enchantment implements Cloneable {
 
     }
 
-    public final boolean isCompatibleWith(Enchantment enchantment) {
-        return this.checkCompatibility(enchantment) && enchantment.checkCompatibility(this);
-    }
-
-    protected boolean checkCompatibility(Enchantment enchantment) {
+    public boolean isCompatibleWith(Enchantment enchantment) {
         return this != enchantment;
     }
 
@@ -277,35 +254,7 @@ public abstract class Enchantment implements Cloneable {
     private static class UnknownEnchantment extends Enchantment {
 
         protected UnknownEnchantment(int id) {
-            super(id, "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
-        }
-    }
-
-    public enum Rarity {
-        COMMON(10),
-        UNCOMMON(5),
-        RARE(2),
-        VERY_RARE(1);
-
-        private final int weight;
-
-        Rarity(int weight) {
-            this.weight = weight;
-        }
-
-        public int getWeight() {
-            return this.weight;
-        }
-
-        public static Rarity fromWeight(int weight) {
-            if (weight < 2) {
-                return VERY_RARE;
-            } else if (weight < 5) {
-                return RARE;
-            } else if (weight < 10) {
-                return UNCOMMON;
-            }
-            return COMMON;
+            super(id, "unknown", 0, EnchantmentType.ALL);
         }
     }
 }

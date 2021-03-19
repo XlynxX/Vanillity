@@ -19,8 +19,8 @@ public abstract class EnchantmentProtection extends Enchantment {
 
     protected final TYPE protectionType;
 
-    protected EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type) {
-        super(id, name, rarity, EnchantmentType.ARMOR);
+    protected EnchantmentProtection(int id, String name, int weight, EnchantmentProtection.TYPE type) {
+        super(id, name, weight, EnchantmentType.ARMOR);
         this.protectionType = type;
         if (protectionType == TYPE.FALL) {
             this.type = EnchantmentType.ARMOR_FEET;
@@ -28,14 +28,14 @@ public abstract class EnchantmentProtection extends Enchantment {
     }
 
     @Override
-    public boolean checkCompatibility(Enchantment enchantment) {
+    public boolean isCompatibleWith(Enchantment enchantment) {
         if (enchantment instanceof EnchantmentProtection) {
             if (((EnchantmentProtection) enchantment).protectionType == this.protectionType) {
                 return false;
             }
             return ((EnchantmentProtection) enchantment).protectionType == TYPE.FALL || this.protectionType == TYPE.FALL;
         }
-        return super.checkCompatibility(enchantment);
+        return super.isCompatibleWith(enchantment);
     }
 
     @Override

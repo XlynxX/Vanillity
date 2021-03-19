@@ -18,13 +18,13 @@ public abstract class EnchantmentDamage extends Enchantment {
 
     protected final TYPE damageType;
 
-    protected EnchantmentDamage(int id, String name, Rarity rarity, TYPE type) {
-        super(id, name, rarity, EnchantmentType.SWORD);
+    protected EnchantmentDamage(int id, String name, int weight, TYPE type) {
+        super(id, name, weight, EnchantmentType.SWORD);
         this.damageType = type;
     }
 
     @Override
-    public boolean checkCompatibility(Enchantment enchantment) {
+    public boolean isCompatibleWith(Enchantment enchantment) {
         return !(enchantment instanceof EnchantmentDamage);
     }
 

@@ -8,12 +8,12 @@ import cn.nukkit.item.enchantment.Enchantment;
  */
 public class EnchantmentBowPower extends EnchantmentBow {
     public EnchantmentBowPower() {
-        super(Enchantment.ID_BOW_POWER, "arrowDamage", Rarity.COMMON);
+        super(Enchantment.ID_BOW_POWER, "arrowDamage", 10);
     }
 
     @Override
     public int getMinEnchantAbility(int level) {
-        return 1 + (level - 1) * 10;
+        return 1 + (level - 1) * 20;
     }
 
     @Override

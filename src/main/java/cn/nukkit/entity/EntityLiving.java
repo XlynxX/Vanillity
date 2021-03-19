@@ -56,7 +56,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     protected float movementSpeed = 0.1f;
 
-    protected int turtleTicks = 0;
+    protected int turtleTicks = 200;
 
     @Override
     protected void initEntity() {
@@ -206,17 +206,18 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public boolean entityBaseTick(int tickDiff) {
         Timings.livingEntityBaseTickTimer.startTiming();
         boolean isBreathing = !this.isInsideOfWater();
+        if (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator())) {
+            isBreathing = true;
+        }
 
         if (this instanceof Player) {
-            if (isBreathing && ((Player) this).getInventory().getHelmet() instanceof ItemTurtleShell) {
+            if (!isBreathing && ((Player) this).getInventory().getHelmet() instanceof ItemTurtleShell) {
+                if (turtleTicks > 0) {
+                    isBreathing = true;
+                    turtleTicks--;
+                }
+            } else {
                 turtleTicks = 200;
-            } else if (turtleTicks > 0) {
-                isBreathing = true;
-                turtleTicks--;
-            }
-
-            if ((((Player) this).isCreative() || ((Player) this).isSpectator())) {
-                isBreathing = true;
             }
         }
         
@@ -231,7 +232,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.attack(new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1));
             }
 
-            if (this.isOnLadder() || this.hasEffect(Effect.LEVITATION) || this.hasEffect(Effect.SLOW_FALLING)) {
+            if (this.isOnLadder() || this.hasEffect(Effect.LEVITATION)) {
                 this.resetFallDistance();
             }
 

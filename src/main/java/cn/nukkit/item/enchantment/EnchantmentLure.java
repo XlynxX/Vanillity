@@ -6,16 +6,22 @@ package cn.nukkit.item.enchantment;
  */
 public class EnchantmentLure extends Enchantment {
     protected EnchantmentLure() {
-        super(ID_LURE, "fishingSpeed", Rarity.RARE, EnchantmentType.FISHING_ROD);
+        super(ID_LURE, "fishingSpeed", 2, EnchantmentType.FISHING_ROD);
     }
 
     @Override
     public int getMinEnchantAbility(int level) {
-        return level + 8 * level + 6;
+        return 15 + (level - 1) * 9;
+    }
+
+    @Override
+    public int getMaxEnchantAbility(int level) {
+        return this.getMinEnchantAbility(level) + 50;
     }
 
     @Override
     public int getMaxLevel() {
         return 3;
     }
+
 }

@@ -54,17 +54,10 @@ public class BlockDirt extends BlockSolidMeta {
     @Override
     public boolean onActivate(Item item, Player player) {
         if (item.isHoe()) {
-            if (this.up() instanceof BlockAir) {
-                item.useOn(this);
-                this.getLevel().setBlock(this, this.getDamage() == 0 ? get(FARMLAND) : get(DIRT), true);
-                return true;
-            }
-        } else if (item.isShovel()) {
-            if (this.up() instanceof BlockAir) {
-                item.useOn(this);
-                this.getLevel().setBlock(this, get(GRASS_PATH));
-                return true;
-            }
+            item.useOn(this);
+            this.getLevel().setBlock(this, this.getDamage() == 0 ? get(FARMLAND) : get(DIRT), true);
+
+            return true;
         }
 
         return false;

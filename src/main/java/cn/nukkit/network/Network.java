@@ -12,15 +12,13 @@ import cn.nukkit.utils.VarInt;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ProtocolException;
-import java.util.Collection;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -223,61 +221,48 @@ public class Network {
     }
 
     public void processBatch(BatchPacket packet, Player player) {
-        List<DataPacket> packets = new ObjectArrayList<>();
-        try {
-            processBatch(packet.payload, packets);
-        } catch (ProtocolException e) {
-            player.close("", e.getMessage());
-            log.error("Unable to process player packets ", e);
-        }
-    }
-
-    public void processBatch(byte[] payload, Collection<DataPacket> packets) throws ProtocolException {
         byte[] data;
         try {
-            data = Network.inflateRaw(payload);
+            data = Network.inflateRaw(packet.payload);
             //data = Zlib.inflate(packet.payload, 2 * 1024 * 1024); // Max 2MB
         } catch (Exception e) {
             log.debug("Exception while inflating batch packet", e);
             return;
         }
 
+        int len = data.length;
         BinaryStream stream = new BinaryStream(data);
         try {
+            List<DataPacket> packets = new ArrayList<>();
             int count = 0;
-            while (!stream.feof()) {
+            while (stream.offset < len) {
                 count++;
                 if (count >= 1000) {
-                    throw new ProtocolException("Illegal batch with " + count + " packets");
+                    player.close("", "Illegal Batch Packet");
+                    return;
                 }
                 byte[] buf = stream.getByteArray();
 
-                ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-                int header = (int) VarInt.readUnsignedVarInt(bais);
-
-                // | Client ID | Sender ID | Packet ID |
-                // |   2 bits  |   2 bits  |  10 bits  |
-                int packetId = header & 0x3ff;
-
-                DataPacket pk = this.getPacket(packetId);
+                DataPacket pk = this.getPacketFromBuffer(buf);
 
                 if (pk != null) {
-                    pk.setBuffer(buf, buf.length - bais.available());
                     try {
                         pk.decode();
                     } catch (Exception e) {
+                        log.warn("Unable to decode {} from {}", pk.getClass().getSimpleName(), player.getName());
+                        log.throwing(e);
                         if (log.isTraceEnabled()) {
-                            log.trace("Dumping Packet\n{}", ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(buf)));
+                            log.trace("Dumping Packet\n{}", ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(packet.payload)));
                         }
-                        log.error("Unable to decode packet", e);
-                        throw new IllegalStateException("Unable to decode " + pk.getClass().getSimpleName());
+                        throw e;
                     }
 
                     packets.add(pk);
-                } else {
-                    log.debug("Received unknown packet with ID: {}", Integer.toHexString(packetId));
                 }
             }
+
+            processPackets(player, packets);
+
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 log.debug("Error whilst decoding batch packet", e);
@@ -296,8 +281,17 @@ public class Network {
         packets.forEach(player::handleDataPacket);
     }
 
-    public DataPacket getPacket(int id) {
-        Class<? extends DataPacket> clazz = this.packetPool[id];
+    private DataPacket getPacketFromBuffer(byte[] buffer) throws IOException {
+        ByteArrayInputStream stream = new ByteArrayInputStream(buffer);
+        DataPacket pk = this.getPacket((byte) VarInt.readUnsignedVarInt(stream));
+        if (pk != null) {
+            pk.setBuffer(buffer, buffer.length - stream.available());
+        }
+        return pk;
+    }
+
+    public DataPacket getPacket(byte id) {
+        Class<? extends DataPacket> clazz = this.packetPool[id & 0xff];
         if (clazz != null) {
             try {
                 return clazz.newInstance();
@@ -341,7 +335,6 @@ public class Network {
         this.registerPacket(ProtocolInfo.ADD_PLAYER_PACKET, AddPlayerPacket.class);
         this.registerPacket(ProtocolInfo.ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket.class);
         this.registerPacket(ProtocolInfo.ANIMATE_PACKET, AnimatePacket.class);
-        this.registerPacket(ProtocolInfo.ANVIL_DAMAGE_PACKET, AnvilDamagePacket.class);
         this.registerPacket(ProtocolInfo.AVAILABLE_COMMANDS_PACKET, AvailableCommandsPacket.class);
         this.registerPacket(ProtocolInfo.BATCH_PACKET, BatchPacket.class);
         this.registerPacket(ProtocolInfo.BLOCK_ENTITY_DATA_PACKET, BlockEntityDataPacket.class);
@@ -443,6 +436,5 @@ public class Network {
         this.registerPacket(ProtocolInfo.PLAYER_ARMOR_DAMAGE_PACKET, PlayerArmorDamagePacket.class);
         this.registerPacket(ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET, PlayerEnchantOptionsPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_PLAYER_GAME_TYPE_PACKET, UpdatePlayerGameTypePacket.class);
-        this.registerPacket(ProtocolInfo.FILTER_TEXT_PACKET, FilterTextPacket.class);
     }
 }

@@ -338,7 +338,8 @@ public class PlayerInventory extends BaseInventory {
         MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
         pk.eid = this.getHolder().getId();
         pk.slots = armor;
-        pk.tryEncode();
+        pk.encode();
+        pk.isEncoded = true;
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
@@ -386,7 +387,8 @@ public class PlayerInventory extends BaseInventory {
         MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
         pk.eid = this.getHolder().getId();
         pk.slots = armor;
-        pk.tryEncode();
+        pk.encode();
+        pk.isEncoded = true;
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
@@ -511,7 +513,7 @@ public class PlayerInventory extends BaseInventory {
     public void onClose(Player who) {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        pk.wasServerInitiated = false;
         who.dataPacket(pk);
         // player can never stop viewing their own inventory
         if (who != holder) {

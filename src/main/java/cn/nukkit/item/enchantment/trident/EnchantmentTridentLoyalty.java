@@ -4,12 +4,17 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 public class EnchantmentTridentLoyalty extends EnchantmentTrident {
     public EnchantmentTridentLoyalty() {
-        super(Enchantment.ID_TRIDENT_LOYALTY, "tridentLoyalty", Rarity.UNCOMMON);
+        super(Enchantment.ID_TRIDENT_LOYALTY, "loyalty", 5);
     }
 
     @Override
     public int getMinEnchantAbility(int level) {
-        return 7 * level + 5;
+        return level * 10;
+    }
+
+    @Override
+    public int getMaxEnchantAbility(int level) {
+        return this.getMinEnchantAbility(level) + 15;
     }
 
     @Override

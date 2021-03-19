@@ -1,9 +1,6 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -36,11 +33,6 @@ public class EntityEnderDragon extends EntityMob {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(200);
-    }
-
-    @Override
-    protected boolean applyNameTag(Player player, Item item) {
-        return false;
     }
 
     @Override
